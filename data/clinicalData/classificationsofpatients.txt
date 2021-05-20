@@ -1,0 +1,35 @@
+Bruchovsky_et_al:
+
+	The following is the list of patients for each classification.
+
+	Without relapse:
+	001, 002, 003, 004, 006, 013, 014, 015, 016, 017
+	020, 022, 024, 026, 028, 029, 030, 031, 037, 039
+	040, 042, 044, 050, 051, 055, 056, 058, 060, 061
+	062, 063, 066, 071, 075, 077, 078, 079, 081, 084
+	086, 087, 091, 093, 094, 095, 096, 097, 100, 102
+	104, 105, 106, 108, 109
+
+
+	With metastasis(without relapse):
+	032, 046, 064, 083, 092
+
+
+	With relapse:
+	011, 012, 019, 025, 036, 041, 052, 054, 085, 088
+	099, 101
+
+
+Shaw_et_al:
+
+	We defined the relapse as the increase of PSA level during
+	an on-treatment peroid.
+
+	The following is the list of patients for each classification.
+
+	Without relapse:
+	1003, 1005, 1018, 1280, 1385, 1429, 1519, 5211, 5257, 5262
+        5263
+
+	With relapse:
+	0619, 1721, 1916, 5251, 5252, 5256, 5259

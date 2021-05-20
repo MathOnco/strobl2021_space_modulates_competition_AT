@@ -81,10 +81,10 @@ def PlotSimulation_CA(dataDf, plotSizeB=True, plotPopsB=True, aggregateData=True
 
     # Add lines to indicate the initial size and the size and time at progression
     ax.hlines(xmin=0,xmax=kwargs.get('xlim', 1.1*dataDf.Time.max()),
-              y=dataDf.V.iloc[0],linestyles=':',linewidth=6,color="black")
+              y=dataDf.V.iloc[0],linestyles=':',linewidth=6, color="black")
     if showProgression:
         ax.hlines(xmin=0, xmax=kwargs.get('xlim', 1.1 * dataDf.Time.max()),
-                  y=1.2*dataDf.V.iloc[0], linestyles=':', linewidth=6)
+                  y=1.2*dataDf.V.iloc[0], linestyles=':', linewidth=6, color="black")
         # Compute the TTP
         ttpArr = np.array([dataDf[(dataDf.ReplicateId == i) & (dataDf.V > 1.2*dataDf.V.iloc[0]) & (
                 dataDf.Time > minTime)].Time.min() for i in dataDf.ReplicateId.unique()])

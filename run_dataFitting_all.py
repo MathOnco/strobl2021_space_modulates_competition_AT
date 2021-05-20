@@ -18,7 +18,7 @@ import multiprocessing as mp
 from itertools import product
 from lmfit import minimize, Parameters
 
-sys.path.append('../../utils/')
+sys.path.append('./utils/')
 import myUtils as utils
 from OnLatticeModel import OnLatticeModel
 from fittingUtils import residual, PerturbParams, ComputeRSquared, LoadPatientData, PatientToOutcomeMap, \

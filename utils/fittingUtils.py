@@ -257,7 +257,7 @@ def PlotFits(fits, dataDf, fitDir="./fits", solver_kws={}, aggregateData=True, d
     ax.set_title(titleStr)
     ax.tick_params(labelsize=labelsize)
     ax2.tick_params(labelsize=labelsize)
-    ax.legend().remove()
+    # ax.legend().remove() # in newer versions of seaborn, this creates annoying "empty handle" errors
     if not decorateX:
         ax.set_xticklabels("")
     if not decorateY:

@@ -31,7 +31,7 @@ patientIdList = [int(re.findall(r'\d+',x)[0]) for x in os.listdir(dataDir)]
 nFits = 10
 perturbICs = True
 runParallel = True
-nProcesses = 22
+nProcesses = 16
 outDir = './fits_all/'
 
 # Parameterise fitting algorithm
@@ -88,8 +88,8 @@ jobList = []
 for patientId,fitId in tqdm(product(patientIdList,range(nFits)),disable=runParallel):
     job = {'patientId':patientId, 'fitId':fitId, 'params':params, 'outDir':outDir}
     jobList.append(job)
-#     if not runParallel: FitModel(job)
-# if runParallel: list(tqdm(pool.imap(FitModel, jobList), total=len(jobList)))
+    if not runParallel: FitModel(job)
+if runParallel: list(tqdm(pool.imap(FitModel, jobList), total=len(jobList)))
 
 # Analyse data
 paramList = ["initialSize",'rFrac','cost',"turnover"]
@@ -99,12 +99,13 @@ dataToAnalyse.to_csv(os.path.join(fitDir, "fitSummaryDf.csv"))
 dataToAnalyse = pd.read_csv(os.path.join(fitDir, "fitSummaryDf.csv"))
 
 # Plot all fits
-patientsToExcludeList = [32, 46, 64, 83, 92] + [2,3,6,11,50,52,84,95,101,104,105] # patients excluded because they developed a metastasis or due to poor fits
+patientsToExcludeList = [32, 46, 64, 83, 92] + [2,3,6,11,50,52,84,95,101,104] # patients excluded because they developed a metastasis or due to poor fits
+dataToAnalyse = dataToAnalyse[np.isin(dataToAnalyse.PatientId,[2,104])==False]
 fig, axList = plt.subplots(7, 10, sharex=True, sharey=True, figsize=(30, 25))
 for i, patientId in tqdm(enumerate(dataToAnalyse.sort_values(by="RSquared")['PatientId']),total=len(patientIdList)):
     fit = GetBestFit(patientId, fitDir=fitDir)
     PlotFits(fits=[fit.fitId], dataDf=LoadPatientData(patientId,dataDir=dataDir), fitDir=fitDir,
-             solver_kws=solver_kws, ylim=2.5, markersize=8,
+             solver_kws=solver_kws, ylim=2.5, markersize=8, dt=10,
              ax=axList.flatten()[i])
     axList.flatten()[i].set_title(label="P%d;R2=%1.2f" % (patientId, fit.rSq),
                                   color={0:"teal",1:"orange"}[PatientToOutcomeMap(patientId)])

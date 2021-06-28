@@ -239,9 +239,11 @@ def PlotFits(fits, dataDf, fitDir="./fits", solver_kws={}, aggregateData=True, d
 
     # Plot the drug concentration
     ax2 = ax.twinx()  # instantiate a second axes that shares the same x-axis
-    exampleFitId = predictionDf.FitId.unique()[0]
-    timeVec = predictionDf.Time[predictionDf.FitId == exampleFitId]
-    drugConcentrationVec = predictionDf.DrugConcentration[predictionDf.FitId == exampleFitId]
+    # exampleFitId = predictionDf.FitId.unique()[0]
+    # timeVec = predictionDf.Time[predictionDf.FitId == exampleFitId]
+    # drugConcentrationVec = predictionDf.DrugConcentration[predictionDf.FitId == exampleFitId]
+    timeVec = dataDf.Time
+    drugConcentrationVec = dataDf.DrugConcentration
     drugConcentrationVec = drugConcentrationVec / (1 - drugBarPosition) + drugBarPosition
     ax2.fill_between(timeVec,
                      drugBarPosition, drugConcentrationVec, color="black",

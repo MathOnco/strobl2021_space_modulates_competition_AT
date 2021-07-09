@@ -200,7 +200,8 @@ def PlotFit(fitObj, dataDf, titleStr="", ax=None, solver_kws={}, **kwargs):
     ax.plot(dataDf.Time, dataDf.PSA, linestyle='none', marker='x')
 
 
-def PlotFits(fits, dataDf, fitDir="./fits", solver_kws={}, aggregateData=True, dt=1., progressBar=False, drugBarPosition=0.85,
+def PlotFits(fits, dataDf, fitDir="./fits", solver_kws={}, aggregateData=True, plotPopulations=True, dt=1.,
+             progressBar=False, drugBarPosition=0.85,
              xlim=None, ylim=1.3, y2lim=1, decorateX=True, decorateY=True, axisLabels=False, markersize=10, labelsize=28,
              titleStr="", ax=None, figsize=(10, 8), outName=None, **kwargs):
     if ax is None:
@@ -221,16 +222,17 @@ def PlotFits(fits, dataDf, fitDir="./fits", solver_kws={}, aggregateData=True, d
                  data=predictionDf, ax=ax)
 
     # Plot the individual populations
-    sns.lineplot(x="Time", y="S", ci='sd',
-                 lw=kwargs.get('linewidth', 7), color=kwargs.get('colorS', "#0F4C13"),
-                 estimator='mean' if aggregateData else None,
-                 data=predictionDf, ax=ax)
-    ax.lines[1].set_linestyle(kwargs.get('linestyleS', '--'))
-    sns.lineplot(x="Time", y="R", ci='sd',
-                 lw=kwargs.get('linewidth', 7), color=kwargs.get('colorR', '#710303'),
-                 estimator='mean' if aggregateData else None,
-                 data=predictionDf, ax=ax)
-    ax.lines[2].set_linestyle(kwargs.get('linestyleR', '-.'))
+    if plotPopulations:
+        sns.lineplot(x="Time", y="S", ci='sd',
+                     lw=kwargs.get('linewidth', 7), color=kwargs.get('colorS', "#0F4C13"),
+                     estimator='mean' if aggregateData else None,
+                     data=predictionDf, ax=ax)
+        ax.lines[1].set_linestyle(kwargs.get('linestyleS', '--'))
+        sns.lineplot(x="Time", y="R", ci='sd',
+                     lw=kwargs.get('linewidth', 7), color=kwargs.get('colorR', '#710303'),
+                     estimator='mean' if aggregateData else None,
+                     data=predictionDf, ax=ax)
+        ax.lines[2].set_linestyle(kwargs.get('linestyleR', '-.'))
 
     # Plot the data
     ax.plot(dataDf.Time, dataDf.PSA,

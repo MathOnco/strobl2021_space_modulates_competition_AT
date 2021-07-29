@@ -18,6 +18,7 @@ class OnLatticeModel():
     def __init__(self, **kwargs):
         # Initialise parameters
         self.modelConfigDic = {"initialSize": 0.5, "rFrac": 0.01,
+                               "divisionRate_S": 0.027, "drugKillProportion": 0.75,
                                "turnover": 0., "cost": 0.,
                                "nReplicates": 10, "seed":-1,
                                "xDim":100, "yDim":100,

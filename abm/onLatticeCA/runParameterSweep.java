@@ -25,6 +25,7 @@ public class runParameterSweep {
         double drugKillProportion = 0.75; // Corresponds to 1.5 from ODE
         String initialSeedingType = "random"; // How cells are initially distributed. Options: "random", "separation1d", "separation2d", "circle"
         int initialSeedingDistance = 10; // Distance which cells are seed apart if seeded using "separation_x", or radius of circle if seeded as "circle"
+        int initCellNumber_R = 5; // Initial number of resistant cells to be seeded, if using the circle_fixedR initial condition (a circle with initCellNumber_R resistant cells, randomly seeded).
         Boolean compareToMTD = true; // Compare AT to MTD. If false simulate only the single treatment given by atThreshold.
         double atThreshold = 0.5; // Relative size reduction when treatment is withdrawn under AT
         Boolean simulateSpecificSchedule = false; // Whether to simulate a specific pre-defined Tx schedule
@@ -73,6 +74,12 @@ public class runParameterSweep {
             else if (args[i].equalsIgnoreCase("-rFrac")) {
                 rFrac = Double.parseDouble(args[i + 1]);
             }
+            if (args[i].equalsIgnoreCase("-divisionRate_S")) {
+                divisionRate_S = Double.parseDouble(args[i + 1]);
+            }
+            if (args[i].equalsIgnoreCase("-drugKillProportion")) {
+                drugKillProportion = Double.parseDouble(args[i + 1]);
+            }
             else if (args[i].equalsIgnoreCase("-turnover")) {
                 deathRate_S = Double.parseDouble(args[i + 1]) * divisionRate_S;
                 deathRate_R = Double.parseDouble(args[i + 1]) * divisionRate_S;
@@ -87,6 +94,9 @@ public class runParameterSweep {
             else if (args[i].equalsIgnoreCase("-initialSeedingDistance")) {
                 initialSeedingDistance = Integer.parseInt(args[i + 1]);
             }
+            else if (args[i].equalsIgnoreCase("-initCellNumber_R")) {
+                initCellNumber_R = Integer.parseInt(args[i + 1]);
+            }
             else if (args[i].equalsIgnoreCase("-compareToMTD")) {
                 compareToMTD= Boolean.parseBoolean(args[i + 1]);
             }
@@ -100,7 +110,7 @@ public class runParameterSweep {
             else if (args[i].equalsIgnoreCase("-treatmentScheduleList")) {
                 String[] tmpList = args[i+1].split("\\[");
                 String[] processed_justNumbers;
-                treatmentScheduleList = new double[tmpList.length][3];
+                treatmentScheduleList = new double[tmpList.length-2][3];
                 for (int k=2; k<tmpList.length; k++) {
                     processed_justNumbers = tmpList[k].split("\\]");
                     processed_justNumbers = processed_justNumbers[0].split(",");
@@ -249,6 +259,10 @@ public class runParameterSweep {
                 myModel.InitialiseCellLog(outFName, dt, profilingMode);
                 if (initialSeedingType.equalsIgnoreCase("random")) {
                     myModel.SetInitialState(initPopSizeArr);
+                } else if (initialSeedingType.equalsIgnoreCase("circle_fixedR")) {
+//                    initPopSizeArr[0] = (int) (initialSizeProp*10000) - initCellNumber_R;
+                    initPopSizeArr[1] = initCellNumber_R;
+                    myModel.SetInitialState(initPopSizeArr, initialSeedingType, initialSeedingDistance);
                 } else {
                     if (initialSeedingType.equalsIgnoreCase("separation1d")) {
                         initPopSizeArr = new int[]{initialSize - 8, 8};

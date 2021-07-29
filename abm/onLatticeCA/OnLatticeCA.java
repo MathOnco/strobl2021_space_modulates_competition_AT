@@ -146,7 +146,7 @@ public class OnLatticeCA extends AgentGrid2D<Cell> {
     public void SetInitialState(int[] initialStateArr, String initialConditionType, int x) {
         this.initPopSize = initialStateArr;
         this.initialConditionType = initialConditionType;
-        if (initialConditionType.equals("circle")) {this.initRadius = x;}
+        if (initialConditionType.equals("circle") || initialConditionType.equals("circle_fixedR")) {this.initRadius = x;}
         else if (initialConditionType.equals("separation1d") || initialConditionType.equals("separation2d")) {this.dist = x;}
     }
 
@@ -353,72 +353,47 @@ public class OnLatticeCA extends AgentGrid2D<Cell> {
 
     public void InitSimulation_Circle(double radius, double rFrac) {
         //places tumor cells in a circle
-        int[] circleHood_all = Util.CircleHood(true, radius);
-        int[] circleHood_resistant = Util.CircleHood(true, Math.sqrt(rFrac)*radius); // Inner circle for the resistant cells
-        int nCells = MapHood(circleHood_all, xDim / 2, yDim / 2);
-        int nCell_R = MapHood(circleHood_resistant, xDim / 2, yDim / 2);
-//        int[] distributionOfResistanceArr = new int[len];
+        int[] circleHood = Util.CircleHood(true, radius); //generate circle neighborhood [x1,y1,x2,y2,...]
+        int nCells = MapHood(circleHood, xDim / 2, yDim / 2);
+        int nCells_R = (int) Math.ceil(nCells * rFrac);
+        InitSimulation_Circle_fixedResistantCellNumber(radius, nCells_R);
+    }
+
+    public void InitSimulation_Circle_fixedResistantCellNumber(double radius, int nCells_R) {
+        //places tumor cells in a circle
+        int[] circleHood = Util.CircleHood(true, radius); //generate circle neighborhood [x1,y1,x2,y2,...]
+        int nCells = MapHood(circleHood, xDim / 2, yDim / 2);
+        int[] distributionOfResistanceArr = new int[nCells];
         Arrays.fill(cellCountsArr, 0); // clear the cell counter
 
-        // Fill the inner circle with resistant cells
-        for (int i = 0; i < nCell_R; i++) {
-            Cell c = NewAgentSQ(circleHood_resistant[i]);
-            c.resistance = 1;
-            c.divisionRate = this.divisionRate_R;
-            c.movementRate = this.movementRate_R;
-            c.deathRate = this.deathRate_R;
-            c.Draw();
-            cellCountsArr[c.resistance] += 1; // Update population counter
+        // Generate a list of random assignment to sensitive or resistance
+        for (int i = 0; i < nCells_R; i++) {
+            distributionOfResistanceArr[i] = 1;
         }
+        for (int i = nCells_R; i < nCells; i++) {
+            distributionOfResistanceArr[i] = 0;
+        }
+        rn.Shuffle(distributionOfResistanceArr);
 
-        // Fill the outer circle with sensitive cells
-        // This is a bit dirty but works. Basically try to place a sensitive cell at all locations
-        // within the big circle. If a spot is already taken because there's a resistant cell there
-        // then just skip this iteration.
         for (int i = 0; i < nCells; i++) {
-            try {
-                Cell c = NewAgentSQ(circleHood_all[i]);
-                c.resistance = 0;
+            Cell c = NewAgentSQ(circleHood[i]);
+            c.resistance = distributionOfResistanceArr[i];
+            if (c.resistance == 0) {
                 c.divisionRate = this.divisionRate_S;
                 c.movementRate = this.movementRate_S;
                 c.deathRate = this.deathRate_S;
-                c.Draw();
-                cellCountsArr[c.resistance] += 1;
-            } catch (RuntimeException e) {}
+            } else {
+                c.divisionRate = this.divisionRate_R;
+                c.movementRate = this.movementRate_R;
+                c.deathRate = this.deathRate_R;
+            }
+            c.Draw();
+            cellCountsArr[c.resistance] += 1; // Update population counter
         }
+        // Initialise population size counter
+        initPopSize[0] = nCells-nCells_R;
+        initPopSize[1] = nCells_R;
     }
-//    public void InitSimulation_Circle(double radius, double rFrac) {
-//        //places tumor cells in a circle
-//        int[] circleHood = Util.CircleHood(true, radius); //generate circle neighborhood [x1,y1,x2,y2,...]
-//        int len = MapHood(circleHood, xDim / 2, yDim / 2);
-//        int[] distributionOfResistanceArr = new int[len];
-//        Arrays.fill(cellCountsArr, 0); // clear the cell counter
-//
-//        // Generate a list of random assignment to sensitive or resistance
-//        for (int i = 0; i < (int) ((1-rFrac)*len); i++) {
-//            distributionOfResistanceArr[i] = 0;
-//        }
-//        for (int i = (int) ((1-rFrac)*len); i < (int) len; i++) {
-//            distributionOfResistanceArr[i] = 1;
-//        }
-//        rn.Shuffle(distributionOfResistanceArr);
-//
-//        for (int i = 0; i < len; i++) {
-//            Cell c = NewAgentSQ(circleHood[i]);
-//            c.resistance = distributionOfResistanceArr[i];
-//            if (c.resistance == 0) {
-//                c.divisionRate = this.divisionRate_S;
-//                c.movementRate = this.movementRate_S;
-//                c.deathRate = this.deathRate_S;
-//            } else {
-//                c.divisionRate = this.divisionRate_R;
-//                c.movementRate = this.movementRate_R;
-//                c.deathRate = this.deathRate_R;
-//            }
-//            c.Draw();
-//            cellCountsArr[c.resistance] += 1; // Update population counter
-//        }
-//    }
 
     // ------------------------------------------------------------------------------------------------------------
     public void StepCells() {
@@ -494,6 +469,8 @@ public class OnLatticeCA extends AgentGrid2D<Cell> {
                 InitSimulation_Separation2d(dist,initPopSize[0]);
             } else if (initialConditionType.equalsIgnoreCase("circle")) {
                 InitSimulation_Circle(initRadius,((double) initPopSize[1])/(initPopSize[0]+initPopSize[1]));
+            } else if (initialConditionType.equalsIgnoreCase("circle_fixedR")) {
+                InitSimulation_Circle_fixedResistantCellNumber(initRadius, initPopSize[1]);
             }
             PrintStatus(0);
             if (cellCountLogFile==null && cellCountLogFileName!=null) {InitialiseCellLog(this.cellCountLogFileName);}
@@ -560,6 +537,8 @@ public class OnLatticeCA extends AgentGrid2D<Cell> {
                 InitSimulation_Separation2d(dist,initPopSize[0]);
             } else if (initialConditionType.equalsIgnoreCase("circle")) {
                 InitSimulation_Circle(initRadius,((double) initPopSize[1])/(initPopSize[0]+initPopSize[1]));
+            } else if (initialConditionType.equalsIgnoreCase("circle_fixedR")) {
+                InitSimulation_Circle_fixedResistantCellNumber(initRadius, initPopSize[1]);
             }
             PrintStatus(0);
             if (cellCountLogFile==null && cellCountLogFileName!=null) {InitialiseCellLog(this.cellCountLogFileName);}
@@ -698,6 +677,8 @@ public class OnLatticeCA extends AgentGrid2D<Cell> {
                 InitSimulation_Separation2d(dist,initPopSize[0]);
             } else if (initialConditionType=="circle") {
                 InitSimulation_Circle(initRadius,initPopSize[1]/(initPopSize[0]+initPopSize[1]));
+            } else if (initialConditionType.equalsIgnoreCase("circle_fixedR")) {
+                InitSimulation_Circle_fixedResistantCellNumber(initRadius, initPopSize[1]);
             }
             PrintStatus(0);
             if (cellCountLogFile==null && cellCountLogFileName!=null) {InitialiseCellLog(this.cellCountLogFileName);}
@@ -783,6 +764,8 @@ public class OnLatticeCA extends AgentGrid2D<Cell> {
                 InitSimulation_Separation2d(dist,initPopSize[0]);
             } else if (initialConditionType=="circle") {
                 InitSimulation_Circle(initRadius,initPopSize[1]/(initPopSize[0]+initPopSize[1]));
+            } else if (initialConditionType.equalsIgnoreCase("circle_fixedR")) {
+                InitSimulation_Circle_fixedResistantCellNumber(initRadius, initPopSize[1]);
             }
             PrintStatus(0);
             if (cellCountLogFile==null && cellCountLogFileName!=null) {InitialiseCellLog(this.cellCountLogFileName);}
@@ -874,6 +857,8 @@ public class OnLatticeCA extends AgentGrid2D<Cell> {
                 InitSimulation_Separation2d(dist,initPopSize[0]);
             } else if (initialConditionType=="circle") {
                 InitSimulation_Circle(initRadius,initPopSize[1]/(initPopSize[0]+initPopSize[1]));
+            } else if (initialConditionType.equalsIgnoreCase("circle_fixedR")) {
+                InitSimulation_Circle_fixedResistantCellNumber(initRadius, initPopSize[1]);
             }
             PrintStatus(0);
             if (cellCountLogFile==null && cellCountLogFileName!=null) {InitialiseCellLog(this.cellCountLogFileName);}

@@ -1,0 +1,19 @@
+data/atFailure_exampleSim/
+data/atFailure_noTurnover_exampleSim/
+data/exampleSims_changingATThreshold/
+data/exampleSims_circleICs/
+data/exampleSims_noCost_noTurnover/
+data/exampleSims_odeComparison/
+data/exampleSims_singlePopulation/
+data/exampleSims_withCost_withTurnover/
+data/fits_full_backup/
+data/neighbourhoodAnalysis/
+data/neighbourhoodAnalysis_patients/
+data/odeData/
+data/separationExperiment/
+development/
+figures/
+gifs/ ! gifs/supplementaryMovie1.gif
+revisions/
+run_cleanDirs.py
+scratch

@@ -13,7 +13,7 @@ data/odeData/
 data/separationExperiment/
 development/
 figures/
-gifs/ ! gifs/supplementaryMovie1.gif
+*.gif ! supplementaryMovie1.gif
 revisions/
 run_cleanDirs.py
 scratch

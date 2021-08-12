@@ -11,9 +11,11 @@ data/neighbourhoodAnalysis/
 data/neighbourhoodAnalysis_patients/
 data/odeData/
 data/separationExperiment/
+data/txComparisonDf.csv
 development/
 figures/
-*.gif ! supplementaryMovie1.gif
+*.gif
+!supplementaryMovie1.gif
 revisions/
 run_cleanDirs.py
 scratch

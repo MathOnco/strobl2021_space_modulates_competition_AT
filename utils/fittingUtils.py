@@ -203,7 +203,7 @@ def PlotFit(fitObj, dataDf, titleStr="", ax=None, solver_kws={}, **kwargs):
 def PlotFits(fits, dataDf, fitDir="./fits", solver_kws={}, aggregateData=True, plotPopulations=True, dt=1.,
              progressBar=False, drugBarPosition=0.85,
              xlim=None, ylim=1.3, y2lim=1, decorateX=True, decorateY=True, axisLabels=False, markersize=10, labelsize=28,
-             titleStr="", ax=None, figsize=(10, 8), outName=None, **kwargs):
+             titleStr="", ax=None, figsize=(10, 8), outName=None, returnPredictionDf=False, **kwargs):
     if ax is None:
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(111)
@@ -268,6 +268,7 @@ def PlotFits(fits, dataDf, fitDir="./fits", solver_kws={}, aggregateData=True, p
         ax.set_yticklabels("")
     plt.tight_layout()
     if outName is not None: plt.savefig(outName)
+    if returnPredictionDf: return predictionDf
 
 
 def PlotParameterDistribution_SinglePatient(patientId, fitDir="./fits", showAll=False, nCols=5, figsize=(12, 4), ax=None):

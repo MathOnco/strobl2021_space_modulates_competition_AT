@@ -12,6 +12,7 @@ data/neighbourhoodAnalysis_patients/
 data/odeData/
 data/separationExperiment/
 data/txComparisonDf.csv
+data/data_all_archive
 development/
 figures/
 *.gif

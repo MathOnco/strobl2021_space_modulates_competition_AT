@@ -13,8 +13,10 @@ data/odeData/
 data/separationExperiment/
 data/txComparisonDf.csv
 data/data_all_archive
+data/clinicalData
 development/
 figures/
+featureImage/
 *.gif
 !supplementaryMovie1.gif
 revisions/

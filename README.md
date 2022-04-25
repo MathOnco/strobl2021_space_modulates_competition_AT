@@ -45,7 +45,7 @@ HAL manual (`abm/manual.pdf`).
 For each results figure in the manuscript we have created a separate jupyter notebook which houses the code to 
 re-create this figure. These are named `jnb_figure2.ipynb` etc. and contain further explanations within. 
 
-In case of questions or comments feel free to [reach out to me](https://stroblmar.github.io/) at anytime.
+In case of questions or comments, feel free to [reach out to me](https://stroblmar.github.io/) at anytime.
 
 ## References
 - ﻿[1] Strobl, M. A. R., Gallaher, J., West, J., Robertson-Tessi, M., Maini, P. K., & Anderson, A. R. A. (2022). 
